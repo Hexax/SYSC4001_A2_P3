@@ -53,15 +53,24 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
       // Add your FORK output here
       execution += std::to_string(current_time) + ", " + std::to_string(duration_intr) + ", cloning the PCB\n";
       current_time += duration_intr;
-
       execution += std::to_string(current_time) + ", " + std::to_string(0) + ", scheduler called\n";
       execution += std::to_string(current_time) + ", " + std::to_string(1) + ", IRET\n";
       current_time++;
 
+      int child_part_num = -1;
+
       {
         PCB child = current;
         child.PID = current.PID + 1;
-        std::vector<PCB> fork_waitlist;
+
+        child.program_name = current.program_name;
+        child.size = current.size;
+
+        child.partition_number = -1;
+        allocate_memory(&child);
+        child_part_num = child.partition_number;
+
+        std::vector<PCB> fork_waitlist = wait_queue;
         fork_waitlist.push_back(current);
         system_status += "time: " + std::to_string(current_time) + "; current trace: " + trace + "\n";
         system_status += print_PCB(child, fork_waitlist) + "\n";
@@ -106,11 +115,26 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
       // With the child's trace, run the child (HINT: think recursion)
       {
         PCB child_current = current;
-        auto [child_exec, child_sys, child_end] = simulate_trace(child_trace, current_time, vectors, delays, external_files, child_current, wait_queue);
+        child_current.PID = current.PID + 1;
+
+        child_current.program_name = current.program_name;
+        child_current.size = current.size;
+
+        child_current.partition_number = child_part_num;
+
+        std::vector<PCB> wait_queue_child = wait_queue;
+        wait_queue_child.push_back(current);
+
+        auto [child_exec, child_sys, child_end] = simulate_trace(child_trace, current_time, vectors, delays, external_files, child_current, wait_queue_child);
         execution += child_exec;
         system_status += child_sys;
         current_time = child_end;
+
+        free_memory(&child_current);
       }
+
+      i = parent_index - 1;
+      continue;
       ///////////////////////////////////////////////////////////////////////////////////////////
 
     } else if (activity == "EXEC") {
