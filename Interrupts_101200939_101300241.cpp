@@ -6,7 +6,7 @@
  * Modified by Mickael Roy and Prunellie Tchakam
  */
 
-#include "interrupts.hpp"
+#include "interrupts_101200939_101300241.hpp"
 
 std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string> trace_file, int time, std::vector<std::string> vectors, std::vector<int> delays, std::vector<external_file> external_files, PCB current, std::vector<PCB> wait_queue) {
 
@@ -29,7 +29,7 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
       execution += intr;
       current_time = time;
 
-      execution += std::to_string(current_time) + ", " + std::to_string(delays[duration_intr]) + ", SYSCALL ISR (ADD STEPS HERE)\n";
+      execution += std::to_string(current_time) + ", " + std::to_string(delays[duration_intr]) + ", SYSCALL ISR(transfer data from device to memory)\n";
       current_time += delays[duration_intr];
 
       execution += std::to_string(current_time) + ", 1, IRET\n";
@@ -39,7 +39,7 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
       current_time = time;
       execution += intr;
 
-      execution += std::to_string(current_time) + ", " + std::to_string(delays[duration_intr]) + ", ENDIO ISR(ADD STEPS HERE)\n";
+      execution += std::to_string(current_time) + ", " + std::to_string(delays[duration_intr]) + ", ENDIO ISR(check device status)\n";
       current_time += delays[duration_intr];
 
       execution += std::to_string(current_time) + ", 1, IRET\n";
@@ -57,19 +57,23 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
       execution += std::to_string(current_time) + ", " + std::to_string(1) + ", IRET\n";
       current_time++;
 
+      // Remember child's partition
       int child_part_num = -1;
 
       {
+
+        // Make child PCB a copy of the parents
         PCB child = current;
         child.PID = current.PID + 1;
-
         child.program_name = current.program_name;
         child.size = current.size;
 
+        // Allocate memory partition
         child.partition_number = -1;
         allocate_memory(&child);
         child_part_num = child.partition_number;
 
+        // Create PCB table
         std::vector<PCB> fork_waitlist = wait_queue;
         fork_waitlist.push_back(current);
         system_status += "time: " + std::to_string(current_time) + "; current trace: " + trace + "\n";
@@ -116,15 +120,13 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
       {
         PCB child_current = current;
         child_current.PID = current.PID + 1;
-
         child_current.program_name = current.program_name;
         child_current.size = current.size;
-
         child_current.partition_number = child_part_num;
-
         std::vector<PCB> wait_queue_child = wait_queue;
         wait_queue_child.push_back(current);
 
+        // Child runs
         auto [child_exec, child_sys, child_end] = simulate_trace(child_trace, current_time, vectors, delays, external_files, child_current, wait_queue_child);
         execution += child_exec;
         system_status += child_sys;
