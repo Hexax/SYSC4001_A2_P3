@@ -1,6 +1,0 @@
-program1, 10
-program2, 15
-programA, 8
-programB, 6
-hugeProgram, 60
-smallProgram, 5
