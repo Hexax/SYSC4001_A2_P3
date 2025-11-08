@@ -1,7 +1,7 @@
 CPU, 20
 FORK, 10
 IF_CHILD, 0
-EXEC programB, 25
+EXEC program7, 25
 IF_PARENT, 0
 CPU, 40
 ENDIF, 0

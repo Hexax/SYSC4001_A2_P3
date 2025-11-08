@@ -9,10 +9,16 @@
 30, 10, context saved
 40, 1, find vector 3 in memory position 0x0006
 41, 1, load address 0X042B into the PC
-42, 30, Program is 8 Mb large
-72, 120, loading program into memory
-192, 3, marking partition as occupied
-195, 6, updating PCB
-201, 0, scheduler called
-201, 1, IRET
-202, 50, CPU Burst
+42, 30, Program is 6 Mb large
+72, 90, loading program into memory
+162, 3, marking partition as occupied
+165, 6, updating PCB
+171, 0, scheduler called
+171, 1, IRET
+172, 1, switch to kernel mode
+173, 10, context saved
+183, 1, find vector 4 in memory position 0x0008
+184, 1, load address 0X0292 into the PC
+185, 250, SYSCALL ISR(transfer data from device to memory)
+435, 1, IRET
+436, 50, CPU Burst

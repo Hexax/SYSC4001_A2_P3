@@ -1,4 +1,4 @@
-time: 24; current trace: FORK, 10 //fork is called by init
+time: 24; current trace: FORK, 10
 +------------------------------------------------------+
 | PID |program name |partition number | size |   state |
 +------------------------------------------------------+
@@ -14,10 +14,9 @@ time: 247; current trace: EXEC program1, 50
 |   0 |        init |               6 |    1 | waiting |
 +------------------------------------------------------+
 
-time: 520; current trace: EXEC program2, 25
+time: 620; current trace: EXEC program2, 25
 +------------------------------------------------------+
 | PID |program name |partition number | size |   state |
 +------------------------------------------------------+
 |   0 |    program2 |               3 |   15 | running |
 +------------------------------------------------------+
-
