@@ -132,10 +132,16 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
         system_status += child_sys;
         current_time = child_end;
 
-        free_memory(&child_current);
+        if (child_current.partition_number != -1) {
+          free_memory(&child_current);
+        }
       }
 
-      i = parent_index - 1;
+      if (parent_index > 0) {
+        i = parent_index - 1;
+      } else {
+        i = parent_index;
+      }
       continue;
       ///////////////////////////////////////////////////////////////////////////////////////////
 
